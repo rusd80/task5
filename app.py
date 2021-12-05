@@ -6,18 +6,22 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def get_query():
-    query = json.loads(request.get_data())
-    with open('countries.json') as file:
+    query = json.loads(request.get_data()).upper()
+    with open('countries.json', 'r', encoding='utf-8') as file:
         countries = load(file)
-    with open('languages.json') as file:
+    with open('languages.json', 'r', encoding='utf-8') as file:
         languages = load(file)
-    if len(query) == 2:
-        result = "Country: {0}, capital: {1}, currency: {2}, languages(native): "\
-            .format(countries[query]["name"], countries[query]["capital"], countries[query]["currency"],)
-        native = []
-        for lang in countries[query]["languages"]:
-            native.append("{0}({1})".format(languages[lang]["name"], languages[lang]["native"]))
-        result += ", ".join(native)
+
+    if len(query) == 2 and query.isalpha():
+        try:
+            result = "Country: {0}, capital: {1}, currency: {2}, languages(native): "\
+                .format(countries[query]["name"], countries[query]["capital"], countries[query]["currency"],)
+            native = []
+            for lang in countries[query]["languages"]:
+                native.append("{0}({1})".format(languages[lang]["name"], languages[lang]["native"]))
+            result += ", ".join(native)
+        except KeyError:
+            result = "country not found"
     else:
         result = "data incorrect"
     return result
