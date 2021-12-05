@@ -6,7 +6,10 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def get_query():
-    query = json.loads(request.get_data()).upper()
+    try:
+        query = json.loads(request.get_data())["CountryCode"].upper()
+    except Exception:
+        return "data incorrect"
     with open('countries.json', 'r', encoding='utf-8') as file:
         countries = load(file)
     with open('languages.json', 'r', encoding='utf-8') as file:
